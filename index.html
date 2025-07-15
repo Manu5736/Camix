@@ -2,79 +2,50 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Camix - Admin</title>
-  <link rel="stylesheet" href="admin.css" />
+  <title>Camix - Tienda</title>
+  <link rel="stylesheet" href="tienda.css" />
 </head>
 <body>
-  <h1>Camix - Panel Administrador</h1>
+  <h1>Camix - Tienda</h1>
 
-  <!-- ================== INICIO PÚBLICO ================== -->
+  <!-- ================== INICIO ================== -->
   <section id="inicio">
-    <!-- Registro de Administrador -->
-    <h2>Registro de Administrador</h2>
-    <input id="adminNombre" placeholder="Nombre" />
-    <input id="adminApellido" placeholder="Apellido" />
-    <input id="adminCedula" placeholder="Cédula" />
-    <input id="adminTelefono" placeholder="Teléfono" />
-    <input id="adminCorreo" placeholder="Correo" />
-    <input id="adminPass" placeholder="Contraseña (mínimo 8)" type="password" />
-    <button onclick="registrarAdmin()">Registrar Admin</button>
+    <h2>Registrar Tienda</h2>
+    <input id="tiendaNombre" placeholder="Nombre de la tienda" />
+    <input id="tiendaCorreo" placeholder="Correo" />
+    <input id="tiendaTelefono" placeholder="Teléfono" />
+    <input id="tiendaDireccion" placeholder="Dirección" />
+    <input id="tiendaPass" placeholder="Contraseña (mínimo 8)" type="password" />
+    <input id="tiendaAdmin" placeholder="Nombre del Admin responsable" />
+    <button onclick="registrarTienda()">Registrar Tienda</button>
 
-    <!-- Inicio de sesión Admin -->
-    <h2>Iniciar Sesión Administrador</h2>
+    <h2>Iniciar Sesión Tienda</h2>
     <input id="loginCorreo" placeholder="Correo" />
     <input id="loginPass" placeholder="Contraseña" type="password" />
-    <button onclick="loginAdmin()">Iniciar Sesión</button>
+    <button onclick="loginTienda()">Iniciar Sesión</button>
   </section>
 
-  <!-- ================== PANEL ADMIN (OCULTO) ================== -->
-  <section id="panelAdmin" style="display:none;">
+  <!-- ================== PANEL TIENDA ================== -->
+  <section id="panelTienda" style="display:none;">
+    <h2>Crear Pedido</h2>
+    <input id="pedidoCliente" placeholder="Nombre del cliente" />
+    <input id="pedidoDireccion" placeholder="Dirección" />
+    <input id="pedidoTelefono" placeholder="Teléfono" />
+    <select id="pedidoPago">
+      <option value="Efectivo">Efectivo</option>
+      <option value="Otro">Otro</option>
+    </select>
+    <input id="pedidoValor" placeholder="Valor del Pedido" type="number" />
+    <input id="pedidoDomi" placeholder="Valor del Domicilio" type="number" />
+    <button onclick="crearPedido()">Crear Pedido</button>
 
-    <!-- Registrar Domiciliario -->
-    <section>
-      <h2>Registrar Domiciliario</h2>
-      <input id="domiNombre" placeholder="Nombre" />
-      <input id="domiApellido" placeholder="Apellido" />
-      <input id="domiCedula" placeholder="Cédula o PPT" />
-      <input id="domiTelefono" placeholder="Teléfono" />
-      <input id="domiCorreo" placeholder="Correo" />
-      <input id="domiPass" placeholder="Contraseña (mínimo 8)" type="password" />
-      <input id="domiVehiculo" placeholder="Vehículo" />
-      <button onclick="registrarDomi()">Registrar Domiciliario</button>
-    </section>
+    <h2>Pedidos Activos</h2>
+    <ul id="listaPedidosActivos"></ul>
 
-    <!-- Pedidos Disponibles -->
-    <section>
-      <h2>Pedidos Disponibles</h2>
-      <ul id="listaPedidosDisponibles"></ul>
-    </section>
+    <h2>Historial</h2>
+    <ul id="listaHistorial"></ul>
 
-    <!-- Pedidos en Curso -->
-    <section>
-      <h2>Pedidos en Curso</h2>
-      <ul id="listaPedidosCurso"></ul>
-    </section>
-
-    <!-- Usuarios Registrados -->
-    <section>
-      <h2>Domiciliarios Registrados</h2>
-      <ul id="listaDomiRegistrados"></ul>
-    </section>
-
-    <!-- Historial -->
-    <section>
-      <h2>Historial de Pedidos</h2>
-      <label>Fecha Inicio: <input type="date" id="filtroInicio" /></label>
-      <label>Fecha Fin: <input type="date" id="filtroFin" /></label>
-      <label># Orden: <input type="text" id="filtroOrden" /></label>
-      <button onclick="filtrarHistorial()">Filtrar</button>
-      <ul id="listaHistorial"></ul>
-      <div id="resumenTotales"></div>
-    </section>
-
-    <!-- Botón cerrar sesión -->
     <button onclick="cerrarSesion()">Cerrar Sesión</button>
-
   </section>
 
   <!-- Firebase SDKs -->
@@ -82,7 +53,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
-  <script src="admin.js"></script>
+  <script src="tienda.js"></script>
 </body>
 </html><style>body {
   font-family: Arial, sans-serif;
@@ -100,7 +71,7 @@ section {
   box-shadow: 0 0 10px #ccc;
 }
 
-input, button {
+input, select, button {
   margin: 5px;
   padding: 10px;
   width: 80%;
@@ -108,7 +79,7 @@ input, button {
 }
 
 button {
-  background: #007bff;
+  background: #28a745;
   border: none;
   color: white;
   border-radius: 5px;
@@ -116,7 +87,7 @@ button {
 }
 
 button:hover {
-  background: #0056b3;
+  background: #218838;
 }
 
 ul {
@@ -130,7 +101,7 @@ li {
   padding: 10px;
   background: #f2f2f2;
   border-radius: 5px;
-}</style><script>// Firebase Config
+}</style><script>// Config Firebase
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
   authDomain: "TU_AUTH_DOMAIN",
@@ -143,114 +114,134 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Registrar Admin
-function registrarAdmin() {
-  const nombre = document.getElementById('adminNombre').value;
-  const apellido = document.getElementById('adminApellido').value;
-  const cedula = document.getElementById('adminCedula').value;
-  const telefono = document.getElementById('adminTelefono').value;
-  const correo = document.getElementById('adminCorreo').value;
-  const pass = document.getElementById('adminPass').value;
+// Registrar Tienda
+function registrarTienda() {
+  const nombre = document.getElementById('tiendaNombre').value;
+  const correo = document.getElementById('tiendaCorreo').value;
+  const telefono = document.getElementById('tiendaTelefono').value;
+  const direccion = document.getElementById('tiendaDireccion').value;
+  const pass = document.getElementById('tiendaPass').value;
+  const admin = document.getElementById('tiendaAdmin').value;
 
   if (pass.length < 8) {
     alert("Contraseña debe tener mínimo 8 caracteres");
     return;
   }
 
-  auth.createUserWithEmailAndPassword(correo, pass)
-    .then(user => {
-      return db.collection('admins').doc(user.user.uid).set({
-        nombre, apellido, cedula, telefono, correo
-      });
-    })
-    .then(() => {
-      alert("Registro de administrador exitoso");
-    })
-    .catch(err => alert(err.message));
+  db.collection('admins').where('nombre', '==', admin).get().then(snapshot => {
+    if (snapshot.empty) {
+      alert("Admin no encontrado. Contacta soporte.");
+    } else {
+      auth.createUserWithEmailAndPassword(correo, pass).then(user => {
+        return db.collection('tiendas').doc(user.user.uid).set({
+          nombre, correo, telefono, direccion, admin, estado: "activo"
+        });
+      }).then(() => {
+        alert("Tienda registrada correctamente");
+      }).catch(err => alert(err.message));
+    }
+  });
 }
 
-// Iniciar sesión Admin
-function loginAdmin() {
+// Login Tienda
+function loginTienda() {
   const correo = document.getElementById('loginCorreo').value;
   const pass = document.getElementById('loginPass').value;
 
   auth.signInWithEmailAndPassword(correo, pass)
-    .then(() => {
-      document.getElementById('inicio').style.display = 'none';
-      document.getElementById('panelAdmin').style.display = 'block';
+    .then((cred) => {
+      return db.collection('tiendas').doc(cred.user.uid).get();
+    })
+    .then((doc) => {
+      if (doc.exists && doc.data().estado === "bloqueado") {
+        alert("🚫 Cuenta bloqueada.\nComunícate con soporte.");
+        auth.signOut();
+      } else {
+        document.getElementById('inicio').style.display = 'none';
+        document.getElementById('panelTienda').style.display = 'block';
+        cargarPedidosActivos();
+        cargarHistorial();
+      }
     })
     .catch(err => alert(err.message));
 }
 
-// Registrar Domiciliario
-function registrarDomi() {
-  const nombre = document.getElementById('domiNombre').value;
-  const apellido = document.getElementById('domiApellido').value;
-  const cedula = document.getElementById('domiCedula').value;
-  const telefono = document.getElementById('domiTelefono').value;
-  const correo = document.getElementById('domiCorreo').value;
-  const pass = document.getElementById('domiPass').value;
-  const vehiculo = document.getElementById('domiVehiculo').value;
+// Crear Pedido
+function crearPedido() {
+  const cliente = document.getElementById('pedidoCliente').value;
+  const direccion = document.getElementById('pedidoDireccion').value;
+  const telefono = document.getElementById('pedidoTelefono').value;
+  const pago = document.getElementById('pedidoPago').value;
+  const valor = parseInt(document.getElementById('pedidoValor').value);
+  const domi = parseInt(document.getElementById('pedidoDomi').value);
+  const userId = auth.currentUser.uid;
 
-  if (pass.length < 8) {
-    alert("Contraseña debe tener mínimo 8 caracteres");
-    return;
-  }
+  const orden = "CAMIX-" + Math.floor(Math.random() * 10000);
 
-  auth.createUserWithEmailAndPassword(correo, pass)
-    .then(user => {
-      return db.collection('domiciliarios').doc(user.user.uid).set({
-        nombre, apellido, cedula, telefono, correo, vehiculo, estado: "activo"
+  db.collection('pedidos').add({
+    orden,
+    cliente,
+    direccion,
+    telefono,
+    metodoPago: pago,
+    valorPedido: valor,
+    valorDomiciliario: domi,
+    pendientePago: pago === "Efectivo",
+    estado: "Disponible",
+    tiendaId: userId
+  }).then(() => {
+    alert(`✔ Pedido ${orden} creado`);
+    document.getElementById('pedidoCliente').value = "";
+    document.getElementById('pedidoDireccion').value = "";
+    document.getElementById('pedidoTelefono').value = "";
+    document.getElementById('pedidoValor').value = "";
+    document.getElementById('pedidoDomi').value = "";
+    cargarPedidosActivos();
+  });
+}
+
+// Cargar Pedidos Activos
+function cargarPedidosActivos() {
+  const userId = auth.currentUser.uid;
+  db.collection('pedidos').where('tiendaId', '==', userId)
+    .where('estado', 'in', ['Disponible', 'Asignado', 'Entregado'])
+    .get().then(snapshot => {
+      const lista = document.getElementById('listaPedidosActivos');
+      lista.innerHTML = "";
+      snapshot.forEach(doc => {
+        const p = doc.data();
+        const total = p.valorPedido + p.valorDomiciliario;
+        const li = document.createElement('li');
+        li.textContent = `#${p.orden} | $${p.valorPedido} + $${p.valorDomiciliario} = $${total} | Estado: ${p.estado}`;
+        lista.appendChild(li);
       });
-    })
-    .then(() => {
-      alert("Domiciliario registrado con éxito");
-    })
-    .catch(err => alert(err.message));
+    });
+}
+
+// Cargar Historial
+function cargarHistorial() {
+  const userId = auth.currentUser.uid;
+  db.collection('pedidos').where('tiendaId', '==', userId)
+    .where('estado', 'in', ['Entregado', 'Cancelado'])
+    .get().then(snapshot => {
+      const lista = document.getElementById('listaHistorial');
+      lista.innerHTML = "";
+      snapshot.forEach(doc => {
+        const p = doc.data();
+        const li = document.createElement('li');
+        li.textContent = `#${p.orden}`;
+        li.onclick = () => {
+          alert(`#${p.orden}\nCliente: ${p.cliente}\nDir: ${p.direccion}\nPago: ${p.metodoPago}\nPedido: $${p.valorPedido}\nDomi: $${p.valorDomiciliario}\nTOTAL: $${p.valorPedido + p.valorDomiciliario}\nEstado: ${p.estado}\nPendiente Pago: ${p.pendientePago}\nPendiente Devolución: ${p.pendienteDevolucion}`);
+        };
+        lista.appendChild(li);
+      });
+    });
 }
 
 // Cerrar sesión
 function cerrarSesion() {
   auth.signOut().then(() => {
-    document.getElementById('panelAdmin').style.display = 'none';
+    document.getElementById('panelTienda').style.display = 'none';
     document.getElementById('inicio').style.display = 'block';
-    alert("Sesión cerrada");
-  });
-}
-
-// Historial con filtros
-function filtrarHistorial() {
-  const inicio = document.getElementById('filtroInicio').value;
-  const fin = document.getElementById('filtroFin').value;
-  const orden = document.getElementById('filtroOrden').value.trim();
-  let query = db.collection('pedidos');
-
-  if (orden) {
-    query = query.where('orden', '==', orden);
-  } else {
-    if (inicio) query = query.where('fecha', '>=', inicio);
-    if (fin) query = query.where('fecha', '<=', fin);
-  }
-
-  query.get().then(snapshot => {
-    let totalCobro = 0;
-    let totalPago = 0;
-    const lista = document.getElementById('listaHistorial');
-    lista.innerHTML = "";
-    snapshot.forEach(doc => {
-      const p = doc.data();
-      if (p.estado === "Entregado" || p.estado === "Cancelado") {
-        let mensaje = `#${p.orden} Cliente: ${p.cliente} Estado: ${p.estado}`;
-        if (p.pendienteDevolucion) mensaje += " ⚠️ Pendiente por devolución";
-        if (p.pendientePago) mensaje += " ⚠️ Pendiente por pagar";
-        const li = document.createElement('li');
-        li.textContent = mensaje;
-        lista.appendChild(li);
-        totalCobro += p.valorPedido || 0;
-        totalPago += p.valorDomiciliario || 0;
-      }
-    });
-    document.getElementById('resumenTotales').innerText =
-      `Total cobrado: $${totalCobro} | Total pago domis: $${totalPago}`;
   });
 }</script>
