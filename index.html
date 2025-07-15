@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Camix - Admin</title>
   <link rel="stylesheet" href="admin.css" />
 </head>
@@ -10,7 +11,6 @@
 
   <!-- ================== INICIO PÚBLICO ================== -->
   <section id="inicio">
-    <!-- Registro de Administrador -->
     <h2>Registro de Administrador</h2>
     <input id="adminNombre" placeholder="Nombre" />
     <input id="adminApellido" placeholder="Apellido" />
@@ -20,69 +20,45 @@
     <input id="adminPass" placeholder="Contraseña (mínimo 8)" type="password" />
     <button onclick="registrarAdmin()">Registrar Admin</button>
 
-    <!-- Inicio de sesión Admin -->
     <h2>Iniciar Sesión Administrador</h2>
     <input id="loginCorreo" placeholder="Correo" />
     <input id="loginPass" placeholder="Contraseña" type="password" />
     <button onclick="loginAdmin()">Iniciar Sesión</button>
   </section>
 
-  <!-- ================== PANEL ADMIN (OCULTO) ================== -->
+  <!-- ================== PANEL ADMIN ================== -->
   <section id="panelAdmin" style="display:none;">
+    <h2>Registrar Domiciliario</h2>
+    <input id="domiNombre" placeholder="Nombre" />
+    <input id="domiApellido" placeholder="Apellido" />
+    <input id="domiCedula" placeholder="Cédula o PPT" />
+    <input id="domiTelefono" placeholder="Teléfono" />
+    <input id="domiCorreo" placeholder="Correo" />
+    <input id="domiPass" placeholder="Contraseña (mínimo 8)" type="password" />
+    <input id="domiVehiculo" placeholder="Vehículo" />
+    <button onclick="registrarDomi()">Registrar Domiciliario</button>
 
-    <!-- Registrar Domiciliario -->
-    <section>
-      <h2>Registrar Domiciliario</h2>
-      <input id="domiNombre" placeholder="Nombre" />
-      <input id="domiApellido" placeholder="Apellido" />
-      <input id="domiCedula" placeholder="Cédula o PPT" />
-      <input id="domiTelefono" placeholder="Teléfono" />
-      <input id="domiCorreo" placeholder="Correo" />
-      <input id="domiPass" placeholder="Contraseña (mínimo 8)" type="password" />
-      <input id="domiVehiculo" placeholder="Vehículo" />
-      <button onclick="registrarDomi()">Registrar Domiciliario</button>
-    </section>
+    <h2>Pedidos Disponibles</h2>
+    <ul id="listaPedidosDisponibles"></ul>
 
-    <!-- Pedidos Disponibles -->
-    <section>
-      <h2>Pedidos Disponibles</h2>
-      <ul id="listaPedidosDisponibles"></ul>
-    </section>
+    <h2>Pedidos en Curso</h2>
+    <ul id="listaPedidosCurso"></ul>
 
-    <!-- Pedidos en Curso -->
-    <section>
-      <h2>Pedidos en Curso</h2>
-      <ul id="listaPedidosCurso"></ul>
-    </section>
+    <h2>Domiciliarios Registrados</h2>
+    <ul id="listaDomiRegistrados"></ul>
 
-    <!-- Usuarios Registrados -->
-    <section>
-      <h2>Domiciliarios Registrados</h2>
-      <ul id="listaDomiRegistrados"></ul>
-    </section>
+    <h2>Historial de Pedidos</h2>
+    <label>Fecha Inicio: <input type="date" id="filtroInicio" /></label>
+    <label>Fecha Fin: <input type="date" id="filtroFin" /></label>
+    <label># Orden: <input type="text" id="filtroOrden" /></label>
+    <button onclick="filtrarHistorial()">Filtrar</button>
+    <ul id="listaHistorial"></ul>
+    <div id="resumenTotales"></div>
 
-    <!-- Historial -->
-    <section>
-      <h2>Historial de Pedidos</h2>
-      <label>Fecha Inicio: <input type="date" id="filtroInicio" /></label>
-      <label>Fecha Fin: <input type="date" id="filtroFin" /></label>
-      <label># Orden: <input type="text" id="filtroOrden" /></label>
-      <button onclick="filtrarHistorial()">Filtrar</button>
-      <ul id="listaHistorial"></ul>
-      <div id="resumenTotales"></div>
-    </section>
-
-    <!-- Botón cerrar sesión -->
     <button onclick="cerrarSesion()">Cerrar Sesión</button>
-
   </section>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
-  <script src="admin.js"></script>
+  <script type="module" src="admin.js"></script>
 </body>
 </html><style>body {
   font-family: Arial, sans-serif;
@@ -130,118 +106,158 @@ li {
   padding: 10px;
   background: #f2f2f2;
   border-radius: 5px;
-}</style><script>// Firebase Config
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_AUTH_DOMAIN",
-  projectId: "TU_PROJECT_ID",
-  storageBucket: "TU_STORAGE_BUCKET",
-  messagingSenderId: "TU_MSG_ID",
-  appId: "TU_APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+}</style><script>import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+
+// Configura tu Supabase
+const supabaseUrl = 'https://sqzabckzxbqkfkozypvo.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxemFiY2t6eGJxa2Zrb3p5cHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1Mzc4NjksImV4cCI6MjA2ODExMzg2OX0.kNnIQppg4TTqH8gaFtxZfTGNHh_ONek9N6ZZYmuRihw'
+
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Registrar Admin
-function registrarAdmin() {
-  const nombre = document.getElementById('adminNombre').value;
-  const apellido = document.getElementById('adminApellido').value;
-  const cedula = document.getElementById('adminCedula').value;
-  const telefono = document.getElementById('adminTelefono').value;
-  const correo = document.getElementById('adminCorreo').value;
-  const pass = document.getElementById('adminPass').value;
+window.registrarAdmin = async function() {
+  const nombre = document.getElementById('adminNombre').value
+  const apellido = document.getElementById('adminApellido').value
+  const cedula = document.getElementById('adminCedula').value
+  const telefono = document.getElementById('adminTelefono').value
+  const correo = document.getElementById('adminCorreo').value
+  const pass = document.getElementById('adminPass').value
 
   if (pass.length < 8) {
-    alert("Contraseña debe tener mínimo 8 caracteres");
-    return;
+    alert("Contraseña debe tener mínimo 8 caracteres")
+    return
   }
 
-  auth.createUserWithEmailAndPassword(correo, pass)
-    .then(user => {
-      return db.collection('admins').doc(user.user.uid).set({
-        nombre, apellido, cedula, telefono, correo
-      });
-    })
-    .then(() => {
-      alert("Registro de administrador exitoso");
-    })
-    .catch(err => alert(err.message));
+  const { data: user, error } = await supabase.auth.signUp({
+    email: correo,
+    password: pass
+  })
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  await supabase.from('admins').insert({
+    uid: user.user.id,
+    nombre,
+    apellido,
+    cedula,
+    telefono,
+    correo
+  })
+
+  alert("Administrador registrado con éxito")
 }
 
-// Iniciar sesión Admin
-function loginAdmin() {
-  const correo = document.getElementById('loginCorreo').value;
-  const pass = document.getElementById('loginPass').value;
+// Iniciar sesión
+window.loginAdmin = async function() {
+  const correo = document.getElementById('loginCorreo').value
+  const pass = document.getElementById('loginPass').value
 
-  auth.signInWithEmailAndPassword(correo, pass)
-    .then(() => {
-      document.getElementById('inicio').style.display = 'none';
-      document.getElementById('panelAdmin').style.display = 'block';
-    })
-    .catch(err => alert(err.message));
+  const { error } = await supabase.auth.signInWithPassword({
+    email: correo,
+    password: pass
+  })
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  document.getElementById('inicio').style.display = 'none'
+  document.getElementById('panelAdmin').style.display = 'block'
 }
 
-// Registrar Domiciliario
-function registrarDomi() {
-  const nombre = document.getElementById('domiNombre').value;
-  const apellido = document.getElementById('domiApellido').value;
-  const cedula = document.getElementById('domiCedula').value;
-  const telefono = document.getElementById('domiTelefono').value;
-  const correo = document.getElementById('domiCorreo').value;
-  const pass = document.getElementById('domiPass').value;
-  const vehiculo = document.getElementById('domiVehiculo').value;
+// Registrar domiciliario
+window.registrarDomi = async function() {
+  const nombre = document.getElementById('domiNombre').value
+  const apellido = document.getElementById('domiApellido').value
+  const cedula = document.getElementById('domiCedula').value
+  const telefono = document.getElementById('domiTelefono').value
+  const correo = document.getElementById('domiCorreo').value
+  const pass = document.getElementById('domiPass').value
+  const vehiculo = document.getElementById('domiVehiculo').value
 
   if (pass.length < 8) {
-    alert("Contraseña debe tener mínimo 8 caracteres");
-    return;
+    alert("Contraseña debe tener mínimo 8 caracteres")
+    return
   }
 
-  auth.createUserWithEmailAndPassword(correo, pass)
-    .then(user => {
-      return db.collection('domiciliarios').doc(user.user.uid).set({
-        nombre, apellido, cedula, telefono, correo, vehiculo, estado: "activo"
-      });
-    })
-    .then(() => {
-      alert("Domiciliario registrado con éxito");
-    })
-    .catch(err => alert(err.message));
+  const { data: user, error } = await supabase.auth.signUp({
+    email: correo,
+    password: pass
+  })
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  await supabase.from('domiciliarios').insert({
+    uid: user.user.id,
+    nombre,
+    apellido,
+    cedula,
+    telefono,
+    correo,
+    vehiculo,
+    estado: 'activo'
+  })
+
+  alert("Domiciliario registrado con éxito")
 }
 
 // Cerrar sesión
-function cerrarSesion() {
-  auth.signOut().then(() => {
-    document.getElementById('panelAdmin').style.display = 'none';
-    document.getElementById('inicio').style.display = 'block';
-    alert("Sesión cerrada");
-  });
+window.cerrarSesion = async function() {
+  await supabase.auth.signOut()
+  document.getElementById('panelAdmin').style.display = 'none'
+  document.getElementById('inicio').style.display = 'block'
+  alert("Sesión cerrada")
 }
 
-// Historial con filtros
-function filtrarHistorial() {
-  const inicio = document.getElementById('filtroInicio').value;
-  const fin = document.getElementById('filtroFin').value;
-  const orden = document.getElementById('filtroOrden').value.trim();
-  let query = db.collection('pedidos');
+// Filtrar historial
+window.filtrarHistorial = async function() {
+  const inicio = document.getElementById('filtroInicio').value
+  const fin = document.getElementById('filtroFin').value
+  const orden = document.getElementById('filtroOrden').value.trim()
+  let query = supabase.from('pedidos').select()
 
   if (orden) {
-    query = query.where('orden', '==', orden);
+    query = query.eq('orden', orden)
   } else {
-    if (inicio) query = query.where('fecha', '>=', inicio);
-    if (fin) query = query.where('fecha', '<=', fin);
+    if (inicio) query = query.gte('fecha', inicio)
+    if (fin) query = query.lte('fecha', fin)
   }
 
-  query.get().then(snapshot => {
-    let totalCobro = 0;
-    let totalPago = 0;
-    const lista = document.getElementById('listaHistorial');
-    lista.innerHTML = "";
-    snapshot.forEach(doc => {
-      const p = doc.data();
-      if (p.estado === "Entregado" || p.estado === "Cancelado") {
-        let mensaje = `#${p.orden} Cliente: ${p.cliente} Estado: ${p.estado}`;
-        if (p.pendienteDevolucion) mensaje += " ⚠️ Pendiente por devolución";
+  const { data, error } = await query
+
+  if (error) {
+    console.error(error)
+    return
+  }
+
+  let totalCobro = 0
+  let totalPago = 0
+  const lista = document.getElementById('listaHistorial')
+  lista.innerHTML = ''
+
+  data.forEach(p => {
+    if (p.estado === "Entregado" || p.estado === "Cancelado") {
+      let mensaje = `#${p.orden} Cliente: ${p.cliente} Estado: ${p.estado}`
+      if (p.pendienteDevolucion) mensaje += " ⚠️ Pendiente por devolución"
+      if (p.pendientePago) mensaje += " ⚠️ Pendiente por pagar"
+      const li = document.createElement('li')
+      li.textContent = mensaje
+      lista.appendChild(li)
+      totalCobro += p.valorPedido || 0
+      totalPago += p.valorDomiciliario || 0
+    }
+  })
+
+  document.getElementById('resumenTotales').innerText =
+    `Total cobrado: $${totalCobro} | Total pago domis: $${totalPago}`
+}</script> ⚠️ Pendiente por devolución";
         if (p.pendientePago) mensaje += " ⚠️ Pendiente por pagar";
         const li = document.createElement('li');
         li.textContent = mensaje;
